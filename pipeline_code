@@ -1,28 +1,30 @@
 pipeline {
     agent any
+
     stages {
-        stage('One') {
-                steps {
-                        echo 'Hi, this is Zulaikha from edureka'
-			
-                }
+        stage('Build') {
+            steps {
+                sh 'rm -rf build'
+                sh 'mkdir build'
+                sh 'touch build/car.txt'
+                sh 'echo "chassis" >> build/car.txt'
+                sh 'echo "engine" >> build/car.txt'
+                sh 'echo "body" >> build/car.txt'
+            }
         }
-	    stage('Two'){
-		    
-		steps {
-			input('Do you want to proceed?')
+        stage('Test'){
+            steps{
+                sh 'test -f build/car.txt'
+                sh 'grep "chassis" build/car.txt'
+                sh 'grep "engine" build/car.txt'
+                sh 'grep "body" build/car.txt'
+            }
         }
-	    }
-        stage('Three') {
-                when {
-                        not {
-                                branch "master"
-                        }
-                }
-                steps {
-			echo "Hello"
-                        }
+        stage('Publish'){
+            steps{
+                archiveArtifacts artifacts: 'build/'
+            }
+            
         }
-       
     }
 }
